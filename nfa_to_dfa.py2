@@ -36,7 +36,7 @@ def distinguishable(test_group, final):
 	while test_group:
 		#do while test_group is not empty
 		test_a = {}
-		sample_state = random.choice(test_group.keys()) #select a random state from the remaining non_final states
+		sample_state = random.choice(list(test_group.keys())) #select a random state from the remaining non_final states
 		test_a[sample_state] = test_group.pop(sample_state)
 		poppable_states = []
 
@@ -45,9 +45,9 @@ def distinguishable(test_group, final):
 		for item in test_a:
 			for states in test_group:
 				if test_a[item][1] == test_group[states][1] and test_a[item][2] == test_group[states][2]: 
-					print "states are indistingquishable:"
-					print test_a[item]
-					print test_group[states]
+					print ("states are indistingquishable:")
+					print (test_a[item])
+					print (test_group[states])
 
 					#states are indistingquishable. Replace all references to test_group state just tested. 
 					poppable_states.append(states)
