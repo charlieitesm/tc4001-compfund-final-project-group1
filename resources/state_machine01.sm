@@ -1,0 +1,21 @@
+# This is a comment
+# Number of states
+4
+# IDs for states
+S0
+S1
+S2
+S3
+# Transitions and state properties
+# State ID | Num. of States | Modifiers(I=Initial, F=Final)
+# Symbol | StateID to transition
+S0 1 I
+a S1
+
+S1 1
+a S2
+
+S2 2
+b S3
+
+S3 0 F
