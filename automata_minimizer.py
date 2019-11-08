@@ -1,7 +1,7 @@
 import sys
 
-from automata_utils import minimize_automaton
-from file_utils import deserialize_automaton, serialize_automaton, save_str_to_file
+from utils.automata_utils import minimize_automaton
+from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file
 
 VERSION = "0.0.1"
 OUTPUT_FILE = "minimized_automaton.txt"

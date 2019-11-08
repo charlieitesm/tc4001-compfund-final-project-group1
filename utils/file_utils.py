@@ -1,4 +1,4 @@
-from state_machine import Automaton
+from automata.state_machine import Automaton
 
 
 def deserialize_automaton(input_file_path: str) -> Automaton:
