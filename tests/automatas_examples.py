@@ -10,46 +10,97 @@ def state_machine_1() -> (Automaton, Automaton):
     s6 = State("6", is_final=True)
     s7 = State("7")
 
-    s1.transitions["0"] = [s2]
-    s1.transitions["1"] = [s3]
+    symbols = ["0", "1"]
 
-    s2.transitions["0"] = [s4]
-    s2.transitions["1"] = [s5]
+    transitions = (
+        # ID   0      1
+        (s1, ([s2], [s3])),
+        (s2, ([s4], [s5])),
+        (s3, ([s6], [s7])),
+        (s4, ([s4], [s5])),
+        (s5, ([s6], [s7])),
+        (s6, ([s4], [s5])),
+        (s7, ([s6], [s7]))
+    )
 
-    s3.transitions["0"] = [s6]
-    s3.transitions["1"] = [s7]
+    _set_transitions(transitions, symbols)
 
-    s4.transitions["0"] = [s4]
-    s4.transitions["1"] = [s5]
-
-    s5.transitions["0"] = [s6]
-    s5.transitions["1"] = [s7]
-
-    s6.transitions["0"] = [s4]
-    s6.transitions["1"] = [s5]
-
-    s7.transitions["0"] = [s6]
-    s7.transitions["1"] = [s7]
-
-    states = [s1, s2, s3, s4, s5, s6, s7]
-
-    big_automaton = Automaton(s1, states)
+    big_automaton = Automaton(s1, [s1, s2, s3, s4, s5, s6, s7])
 
     s1 = State("124", is_initial=True)
     s2 = State("357")
     s3 = State("6", is_final=True)
 
-    s1.transitions["0"] = [s1]
-    s1.transitions["1"] = [s2]
+    transitions = (
+        # ID   0      1
+        (s1, ([s1], [s2])),
+        (s2, ([s3], [s2])),
+        (s3, ([s1], [s2]))
+    )
 
-    s2.transitions["0"] = [s3]
-    s2.transitions["1"] = [s2]
+    _set_transitions(transitions, symbols)
 
-    s3.transitions["0"] = [s1]
-    s3.transitions["1"] = [s2]
-
-    states = [s1, s2, s3]
-
-    min_automaton = Automaton(s1, states)
+    min_automaton = Automaton(s1, [s1, s2, s3])
 
     return big_automaton, min_automaton
+
+
+def state_machine2() -> (Automaton, Automaton):
+    s6 = State("6", is_initial=True, is_final=True)
+    s7 = State("7", is_final=True)
+    s8 = State("8", is_final=True)
+    s9 = State("9", is_final=True)
+    s10 = State("10", is_final=True)
+    s11 = State("11", is_final=True)
+    s12 = State("12")
+
+    symbols = ["0", "1"]
+
+    transitions = (
+        # ID   S0   S1
+        (s6, ([s7], [s9])),
+        (s7, ([s7], [s8])),
+        (s8, ([s7], [s10])),
+        (s9, ([s7], [s10])),
+        (s10, ([s11], [s10])),
+        (s11, ([s12], [s10])),
+        (s12, ([s12], [s12]))
+    )
+
+    _set_transitions(transitions, symbols)
+
+    big_automaton = Automaton(s6, [s6, s7, s8, s9, s10, s11, s12])
+
+    s_a = State("A", is_initial=True, is_final=True)
+    s_b = State("B", is_final=True)
+    s_c = State("C", is_final=True)
+    s_d = State("D", is_final=True)
+    s_e = State("E")
+
+    transitions = (
+        # ID   S0   S1
+        (s_a, ([s_a], [s_b])),
+        (s_b, ([s_a], [s_c])),
+        (s_c, ([s_d], [s_c])),
+        (s_d, ([s_e], [s_c])),
+        (s_e, ([s_e], [s_e]))
+    )
+
+    _set_transitions(transitions, symbols)
+
+    mini_automaton = Automaton(s_a, [s_a, s_b, s_c, s_d, s_e])
+
+    return big_automaton, mini_automaton
+
+
+def _set_transitions(transitions: tuple, symbols: list):
+    # transitions should be in the form (state, ((states_for_symbol1), (states_for_symbol2)))
+    #  where len(tuple[1]) == len(symbols)
+
+    for state_conf in transitions:
+        state = state_conf[0]
+
+        for symbol_idx in range(len(symbols)):
+            symbol = symbols[symbol_idx]
+            states_to_transition_to = list(state_conf[1][symbol_idx])
+            state.transitions[symbol] = states_to_transition_to
