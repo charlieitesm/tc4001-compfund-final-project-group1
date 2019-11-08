@@ -1,4 +1,4 @@
-from state_machine import Automaton
+from automata.state_machine import Automaton
 
 
 def minimize_automaton(input: Automaton) -> Automaton:
