@@ -45,7 +45,7 @@ def state_machine_1() -> (Automaton, Automaton):
     return big_automaton, min_automaton
 
 
-def state_machine2() -> (Automaton, Automaton):
+def state_machine_2() -> (Automaton, Automaton):
     s6 = State("6", is_initial=True, is_final=True)
     s7 = State("7", is_final=True)
     s8 = State("8", is_final=True)
