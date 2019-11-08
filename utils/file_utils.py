@@ -2,6 +2,7 @@ from automata.state_machine import Automaton
 from automata.state_machine import State
 
 
+
 def deserialize_automaton(input_file_path: str) -> Automaton:
     errors = getattr(__builtins__, 'FileNotFoundError', IOError)
     try:
