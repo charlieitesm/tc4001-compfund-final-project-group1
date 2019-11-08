@@ -1,6 +1,6 @@
 import unittest
 
-from automata_examples import state_machine_1, state_machine_2
+from automata_examples import state_machine_1, state_machine_2, state_machine_3
 from automata_utils import automata_are_equivalent, states_are_compatible
 from state_machine import State
 
@@ -9,7 +9,7 @@ class EquivalentAutomataTest(unittest.TestCase):
 
     def test_equivalent_automaton_1(self):
         """
-        From a given DFA, we'll check if it is equivalent to the expected output
+        From a given DFA, we'll check if it is equivalent to the expected output using Moore's
         """
         big_automaton, mini_automaton = state_machine_1()
 
@@ -20,7 +20,7 @@ class EquivalentAutomataTest(unittest.TestCase):
 
     def test_equivalent_automaton_2(self):
         """
-        From a given DFA, we'll check if it is equivalent to the expected output
+        From a given DFA, we'll check if it is equivalent to the expected output using Moore's
         """
         big_automaton, mini_automaton = state_machine_2()
 
@@ -46,6 +46,18 @@ class EquivalentAutomataTest(unittest.TestCase):
         self.assertFalse(result)
 
         result = automata_are_equivalent(mini_1, big_2)
+        self.assertIsNotNone(result)
+        self.assertFalse(result)
+
+    def test_non_equivalent_automata_different_symbols(self):
+        automaton_1, _ = state_machine_2()
+        automaton_2, _ = state_machine_3()
+
+        result = automata_are_equivalent(automaton_1, automaton_2)
+        self.assertIsNotNone(result)
+        self.assertFalse(result)
+
+        result = automata_are_equivalent(automaton_2, automaton_1)
         self.assertIsNotNone(result)
         self.assertFalse(result)
 

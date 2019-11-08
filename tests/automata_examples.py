@@ -93,6 +93,44 @@ def state_machine_2() -> (Automaton, Automaton):
     return big_automaton, mini_automaton
 
 
+def state_machine_3() -> (Automaton, Automaton):
+    s3 = State("3", is_initial=True, is_final=True)
+    s4 = State("4")
+    s5 = State("5", is_final=True)
+
+    symbols = ["a", "b"]
+    transitions = (
+        # ID   a     b
+        (s3, ([s4], [s3])),
+        (s4, ([s5], [s4])),
+        (s5, ([s5], [s4]))
+    )
+    _set_transitions(transitions, symbols)
+
+    automaton = Automaton(s3, [s3, s4, s5])
+
+    # Since we don't have an equivalent "big automaton" we'll return the same automaton as both the mini and big
+    return automaton, automaton
+
+
+def state_machine_4() -> (Automaton, Automaton):
+    s1 = State("1", is_initial=True, is_final=True)
+    s2 = State("2")
+
+    symbols = ["a", "b"]
+    transitions = (
+        # ID   a     b
+        (s1, ([s2], [s1])),
+        (s2, ([s1], [s2]))
+    )
+    _set_transitions(transitions, symbols)
+
+    automaton = Automaton(s1, [s1, s2])
+
+    # Since we don't have an equivalent "big automaton" we'll return the same automaton as both the mini and big
+    return automaton, automaton
+
+
 def _set_transitions(transitions: tuple, symbols: list):
     # transitions should be in the form (state, ((states_for_symbol1), (states_for_symbol2)))
     #  where len(tuple[1]) == len(symbols)
