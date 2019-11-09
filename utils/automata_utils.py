@@ -3,9 +3,72 @@ from collections import deque
 from automata.state_machine import Automaton, State
 
 
-def minimize_automaton(input: Automaton) -> Automaton:
-    # TODO: Implement me!
-    pass
+def minimize_automaton(input_automaton: Automaton) -> Automaton:
+    """
+    Minimizes an input Automaton and returns it as a new Automaton.
+
+    This method supports DFA only, NFA need to be transformed first.
+    :param input_automaton: an Automaton to minimize
+    :return: a new minimized Automaton
+    """
+    # Build a table with all the states, we'll use a map for that, here we'll keep track of inconsistent states
+    state_map = _build_state_map(input_automaton)
+
+    # With the state map formed, we need to loop over the map until we have crossed out all transitions with
+    # non-equivalent states
+    state_map = _cross_out_redundant_states(state_map)
+
+    # With the crossed-out redundant states out, we can build our automaton
+    raise NotImplementedError
+
+
+def _build_state_map(input_automaton: Automaton):
+    state_map = {}
+
+    for p in input_automaton.states:
+        for q in input_automaton.states:
+            if p == q:  # Skip pairing a state with itself
+                continue
+            pq_str = "{},{}".format(p.state_id, q.state_id)
+            qp_str = "{},{}".format(q.state_id, p.state_id)
+
+            # We should add a pair only once, (p,q) == (q,p)
+            if (p, q) not in state_map and (q, p) not in state_map:
+                pair_record = {
+                    "isDiscarded": not states_are_compatible(p, q),  # Mark it out if p,q are incompatible
+                    "symbols": {}
+                }
+
+                # Fill out the transitions for all symbols as tuples of (State, State)
+                for symbol in p.transitions.keys():
+                    # Remember that transitions are a list, for DFA is of length == 1
+                    pair_record["symbols"][symbol] = (p.transitions.get(symbol)[0], q.transitions.get(symbol)[0])
+
+                state_map[(p, q)] = pair_record
+    return state_map
+
+
+def _cross_out_redundant_states(state_map: dict) -> dict:
+
+    while True:
+        record_was_crossed_out = False
+
+        for key, pair_record in state_map.items():
+            if pair_record["isDiscarded"]:
+                continue
+
+            for symbol, (p, q) in pair_record["symbols"].items():
+                # (p,q) == (q,p) so we need to cross out both records, if found to be inconsistent
+                transition_pair_record = state_map.get((p, q)) or state_map.get((q, p))
+
+                # If we find a reference to a discarded record, this record must be discarded too
+                if transition_pair_record is not None and transition_pair_record["isDiscarded"]:
+                    pair_record["isDiscarded"] = True
+                    record_was_crossed_out = True
+
+        if not record_was_crossed_out:
+            break  # We are done now
+    return state_map
 
 
 def nfa_2_dfa(input: Automaton) -> Automaton:
