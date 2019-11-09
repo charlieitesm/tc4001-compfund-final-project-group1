@@ -17,7 +17,7 @@ class MinimizedAutomataTest(unittest.TestCase):
         #  same number of states, then the two automata are, in fact, the same automata
         self.assertTrue(automata_are_equivalent(result, mini_automaton),
                         "Expected automaton is not equivalent to result automaton")
-        self.assertEquals(len(mini_automaton.states), len(result.states))
+        self.assertEqual(len(mini_automaton.states), len(result.states))
 
     def test_already_minimized_dfa(self):
         """
@@ -30,7 +30,7 @@ class MinimizedAutomataTest(unittest.TestCase):
         #  same number of states, then the two automata are, in fact, the same automata
         self.assertTrue(automata_are_equivalent(result, mini_automaton),
                         "Expected automaton is not equivalent to result automaton")
-        self.assertEquals(len(mini_automaton.states), len(result.states))
+        self.assertEqual(len(mini_automaton.states), len(result.states))
 
 
 if __name__ == '__main__':

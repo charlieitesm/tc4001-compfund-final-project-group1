@@ -18,8 +18,12 @@ def minimize_automaton(input_automaton: Automaton) -> Automaton:
     # non-equivalent states
     state_map = _cross_out_redundant_states(state_map)
 
+    # Merged the states to prepare for the new automaton
+    merged_states = _merge_non_redundant_states(state_map, input_automaton.states)
+    new_initial_state = [state for state in merged_states if state.is_initial][0]
+
     # With the crossed-out redundant states out, we can build our automaton
-    raise NotImplementedError
+    return Automaton(new_initial_state, merged_states)
 
 
 def _build_state_map(input_automaton: Automaton):
@@ -69,6 +73,71 @@ def _cross_out_redundant_states(state_map: dict) -> dict:
         if not record_was_crossed_out:
             break  # We are done now
     return state_map
+
+
+def _merge_non_redundant_states(state_map: dict, original_states: list) -> list:
+    # Filter out the discarded states and store them in a map (m,p): dict{}
+    non_redundant_states = {pairs: record for pairs, record in state_map.items() if not record["isDiscarded"]}
+
+    """
+    We'll build a map for each of the individual states that will contain a reference to a new merged state object
+    map = {
+        1: State123
+        2: State123
+        3: State123
+        4: State124
+    }
+    This will help us to merge all of the related IDs in a single State
+    """
+    merged_states = {}
+
+    for pairs, record in non_redundant_states.items():
+        p, q = pairs
+        # If neither p nor q have a merged state, we need to create one
+        merged_state_p = merged_states.get(p)
+        merged_state_q = merged_states.get(q)
+
+        if merged_state_p is None and merged_state_q is None:
+            # Create a new merged state
+            is_initial = p.is_initial or q.is_initial
+            is_final = p.is_final or q.is_final
+            new_state = State("{}{}".format(p.state_id, q.state_id), is_initial=is_initial, is_final=is_final)
+            merged_states[p] = new_state
+            merged_states[q] = new_state
+
+        elif merged_state_p is not None and merged_state_q is None:
+            # We need to append the ID of Q to the already merged state and update Q's record
+            merged_state_p.state_id += q.state_id
+            merged_states[q] = merged_state_p
+        elif merged_state_p is None and merged_state_q is not None:
+            # We need to append the ID of P to the already merged state and update P's record
+            merged_state_q.state_id += p.state_id
+            merged_states[p] = merged_state_q
+
+    # After merging the states, we need to add those original states that were not paired up with anyone as a new State
+    for old_state in [state for state in original_states if state not in merged_states]:
+        new_state = State(old_state.state_id, is_initial=old_state.is_initial, is_final=old_state.is_final)
+        merged_states[old_state] = new_state
+
+    return _calculate_new_transitions(merged_states)
+
+
+def _calculate_new_transitions(merged_states: dict) -> list:
+    final_states = []
+
+    for old_state, new_state in merged_states.items():
+        # Don't add update the new state more than once
+        if new_state in final_states:
+            continue
+
+        for symbol, transition_state in old_state.transitions.items():
+            transition_state = transition_state[0]  # DFA have only one transition state
+            new_transition_state = merged_states.get(transition_state)
+            new_state.transitions[symbol] = [new_transition_state]
+
+        final_states.append(new_state)
+
+    return final_states
 
 
 def nfa_2_dfa(input: Automaton) -> Automaton:
