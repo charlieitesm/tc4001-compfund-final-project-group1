@@ -1,6 +1,6 @@
 import unittest
 
-from automata.state_machine import Automaton, State
+from automata.state_machine import Automaton
 from utils.file_utils import deserialize_automaton
 
 
