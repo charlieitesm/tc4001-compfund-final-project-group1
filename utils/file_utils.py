@@ -1,34 +1,50 @@
-from automata.state_machine import Automaton
-from automata.state_machine import State
+from automata.state_machine import Automaton, State
 
 
 def deserialize_automaton(input_file_path: str) -> Automaton:
-    errors = getattr(__builtins__, 'FileNotFoundError', IOError)
-    try:
-        states = []
-        initial_state = State()
-        file = open(input_file_path, "r")
-        for line in file:
-            curated_line = line.strip('\n').split("|")
-            sInit = curated_line[0]
-            transition = curated_line[1]
-            eOut = curated_line[2]
-            state = None
+    states = []
+    initial_state = State()
+    file = open(input_file_path, "r")
+    initial = False
+    final = False
+    for line in file:
+        if line.startswith("#") or line.strip() == '':
+            continue
+        curated_line = line.strip('\n').split("|")
+        sInit = curated_line[0]
+        transition = curated_line[1]
+        s_out = curated_line[2]
+        state = None
 
-            if ">" in sInit:
-                state = State(sInit.strip(">"), is_initial = True)
-                initial_state = state
-            elif "*" in sInit:
-                state = State(sInit.strip("*"), is_final = True)
-            else:
-                state = State(sInit)
+        # initial and acceptor
+        if ">*" in sInit:
+            state = State(sInit.strip(">*"), is_initial=True, is_final=True)
+            initial_state = state
+            initial = True
+            final = True
+        # initial
+        if ">" in sInit:
+            state = State(sInit.strip(">"), is_initial=True)
+            initial_state = state
+            initial = True
+        # acceptor
+        if "*" in sInit:
+            state = State(sInit.strip("*"), is_final=True)
+            final = True
+        # state has not been assigned yet, so that means
+        # that it is a "regular" state.
+        if state is None:
+            state = State(sInit)
 
-            states.append(state)
-            state.transitions[transition] = eOut
+        states.append(state)
+        state.transitions[transition] = s_out
 
-        return Automaton(initial_state, states)
-    except errors:
-        print("Error: File missing or cannot be opened")
+    file.close()
+
+    if not initial and not final:
+        raise ValueError("The provided automata contains no initial or final state")
+
+    return Automaton(initial_state, states)
 
 
 def serialize_automaton(input: Automaton) -> str:
