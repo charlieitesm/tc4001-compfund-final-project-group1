@@ -21,6 +21,9 @@ class State:
         self.is_final = is_final
         self.transitions = defaultdict(lambda: [])
 
+    def __str__(self):
+        return "s{}".format(self.state_id)
+
 
 class Automaton:
     """
