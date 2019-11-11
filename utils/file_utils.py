@@ -23,20 +23,21 @@ def deserialize_automaton(input_file_path: str) -> Automaton:
 
             stateId = re.sub("[>*]", "", sInit)
 
-            if initial:
-                initial_state = stateId
-            if final:
-                final_state = stateId  # at least one final state
+            # if initial:
+            #     initial_state = stateId
+            # if final:
+            #     final_state = stateId  # at least one final state
 
             if stateId not in visited_state:
                 visited_state.add(stateId)
                 state = State(stateId, is_initial=initial, is_final=final)
+                if initial:
+                    initial_state = state
                 state.transitions[transition] = [s_out]
-                states.append(StateType(stateId, state))
+                states.append(state)#StateType(stateId, state))
             else:
-                for s in states:
-                    if s.stateId == stateId:
-                        s.add_transition(transition, s_out)
+                state.transitions[transition].append(s_out)
+
 
     if initial_state is None and final_state is None:
         raise ValueError("The provided automata contains no initial or final state")
@@ -45,21 +46,18 @@ def deserialize_automaton(input_file_path: str) -> Automaton:
 
 
 def serialize_automaton(input: Automaton) -> str:
-    # TODO: Implement me!
     automaton = "# Generated string"
     stats = input.states
-    state_list = []
 
     for st in stats:
-        stat = st.state
-        for val in stat.transitions.items():
+        for val in st.transitions.items():
             for v in val[1]:
-                if stat.is_initial:
-                    automaton += _calculate_str(">", stat.state_id + "|" + val[0] + "|" + v)
-                if not stat.is_initial and not stat.is_final:
-                    automaton += _calculate_str("", stat.state_id + "|" + val[0] + "|" + v)
-                if stat.is_final:
-                    automaton += _calculate_str("*", stat.state_id + "|" + val[0] + "|" + v)
+                if st.is_initial:
+                    automaton += _calculate_str(">", st.state_id + "|" + val[0] + "|" + v)
+                if not st.is_initial and not st.is_final:
+                    automaton += _calculate_str("", st.state_id + "|" + val[0] + "|" + v)
+                if st.is_final:
+                    automaton += _calculate_str("*", st.state_id + "|" + val[0] + "|" + v)
 
     #print(automaton)
     return automaton
@@ -73,11 +71,3 @@ def save_str_to_file(output_file_path: str, contents: str):
     with open(output_file_path, mode="w", encoding="utf8") as fl:
         print(contents, file=fl)
 
-
-class StateType:
-    def __init__(self, stateId: str, state: State):
-        self.stateId = stateId
-        self.state = state
-
-    def add_transition(self, transition, s_out):
-        self.state.transitions[transition].append(s_out)
