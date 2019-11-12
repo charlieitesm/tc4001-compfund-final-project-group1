@@ -24,16 +24,21 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
         existing_state[current_state.state_id] = True
         for symbol in alphabet:
             to_state = State(state_id='')
-            if current_state.transitions.get(symbol, None) is None:
-                to_state.transitions[symbol].append(limbo_state)
-                if not existing_state.get(limbo_state.state_id, False):
-                    existing_state[limbo_state.state_id] = True
-                    states_list.append(limbo_state)
-            else:
-                for transition in current_state.transitions[symbol]:
-                    to_state.state_id += transition.state_id
-                    to_state.is_final = to_state.is_final or transition.is_final
-                    to_state.is_initial = to_state.is_initial or transition.is_initial
+            for id in current_state.state_id.split('-'):
+                for node in input.states:
+                    if id == node.state_id:
+                        element = node
+                        break
+                if element.transitions.get(symbol, None) is None:
+                    to_state.transitions[symbol].append(limbo_state)
+                    if not existing_state.get(limbo_state.state_id, False):
+                        existing_state[limbo_state.state_id] = True
+                        states_list.append(limbo_state)
+                else:
+                    for transition in element.transitions[symbol]:
+                        to_state.state_id = to_state.state_id + '-' + transition.state_id
+                        to_state.is_final = to_state.is_final or transition.is_final
+            to_state.state_id = to_state.state_id[1:]
 
             current_state.transitions[symbol] = [to_state]
             if not existing_state.get(to_state.state_id, False):
@@ -71,7 +76,6 @@ def clean_epsilon_transition(input: Automaton) -> Automaton:
             if len(next_states) > 0:
                 current_states = next_states
                 next_states = []
-                print(next_states)
             else:
                 break
 
@@ -87,7 +91,7 @@ def clean_epsilon_transition(input: Automaton) -> Automaton:
 def get_alphabet(input: Automaton) -> list:
     """
            Function to creates a unique set of the symbols of the alphabet being used in the automaton
-     """
+    """
     alphabet = set()
 
     for state in input.states:
@@ -97,13 +101,34 @@ def get_alphabet(input: Automaton) -> list:
     return list(alphabet)
 
 
+def print_automaton(input: Automaton):
+    """
+        Helper function to print the automaton
+    """
+    for state in input.states:
+        for symbol, go_to in state.transitions.items():
+            if state.is_initial:
+                print("initial " + state.state_id + " with " + symbol + ": ")
+            elif state.is_final:
+                print("final " + state.state_id + " with " + symbol + ": ")
+            else:
+                print(state.state_id + " with " + symbol + ": ")
+            for each in go_to:
+                print(each.state_id, end=' ')
+            print('')
+
+
 def is_dfa(input: Automaton) -> bool:
     """
-           function to check if a given automaton is deterministic or not
-     """
+           Function to check if a given automaton is deterministic or not
+    """
+    alphabet = get_alphabet(input)
+    if ' ' in alphabet:
+        return False
+
     for state in input.states:
-        for k, v in state.transitions.items():
-            if len(v) != 1:
+        for symbol in alphabet:
+            if len(state.transitions.get(symbol, [])) != 1:
                 return False
 
     return True
