@@ -131,6 +131,108 @@ def state_machine_4() -> (Automaton, Automaton):
     return automaton, automaton
 
 
+def state_machine_nfa_1() -> (Automaton, Automaton):
+    """
+    Returns a NFA that describes the Language over {0,1} where the third-to-last char is 1.
+    No Epsillon-transitions
+    :return: a NF Automaton
+    """
+    s1 = State("A", is_initial=True)
+    s2 = State("B")
+    s3 = State("C")
+    s4 = State("D", is_final=True)
+
+    symbols = ["0", "1"]
+    transitions = (
+        # ID   0     1
+        (s1, ([s1], [s1, s2])),
+        (s2, ([s3], [s3])),
+        (s3, ([s4], [s4])),
+    )
+
+    _set_transitions(transitions, symbols)
+
+    nfa = Automaton(s1, [s1, s2, s3, s4])
+
+    # Let's build the equivalent DFA to this NFA
+    dfaS_A = State("A", is_initial=True)
+    dfaS_AB = State("AB")
+    dfaS_ABC = State("ABC")
+    dfaS_ABCD = State("ABCD", is_final=True)
+    dfaS_ACD = State("ACD", is_final=True)
+    dfaS_ABD = State("ABD", is_final=True)
+    dfaS_AC = State("AC")
+    dfaS_AD = State("AD", is_final=True)
+
+    transitions = (
+        # ID           0            1
+        (dfaS_A,    ([dfaS_A],   [dfaS_AB])),
+        (dfaS_AB,   ([dfaS_AC],  [dfaS_ABC])),
+        (dfaS_ABC,  ([dfaS_ACD], [dfaS_ABCD])),
+        (dfaS_ABCD, ([dfaS_ACD], [dfaS_ABCD])),
+        (dfaS_ACD,  ([dfaS_AD],  [dfaS_ABD])),
+        (dfaS_ABD,  ([dfaS_AC],  [dfaS_ABC])),
+        (dfaS_AC,   ([dfaS_AD],  [dfaS_ABD])),
+        (dfaS_AD,   ([dfaS_A],   [dfaS_AB])),
+    )
+
+    _set_transitions(transitions, symbols)
+
+    dfa = Automaton(dfaS_A, [dfaS_A, dfaS_AB, dfaS_ABC, dfaS_ABCD, dfaS_ACD, dfaS_ABD, dfaS_AC, dfaS_AD])
+
+    return nfa, dfa
+
+
+def state_machine_nfa_2() -> Automaton:
+    """
+    Returns a NFA that has Epsillon transitions
+    :return: a NFAutomaton with Epsillon transition
+    """
+    s1 = State("A", is_initial=True)
+    s2 = State("B")
+    s3 = State("C")
+    s4 = State("D", is_final=True)
+
+    symbols = ["0", "1", " "]
+    transitions = (
+        # ID   0     1    Epsillon
+        (s1, ([s1], [s2], [])),
+        (s2, ([s3], [s2], [s1])),
+        (s3, ([],   [s4], [s2])),
+        (s4, ([s3], [],   [s2])),
+    )
+
+    _set_transitions(transitions, symbols)
+
+    return Automaton(s1, [s1, s2, s3, s4])
+
+
+def state_machine_nfa_3() -> Automaton:
+    """
+    Returns a NFA that has Epsillon transitions and one and only one transition for each symbol.
+    Even though it might look like a DFA, the fact that this automata has epsillon transitions
+    makes it a NFA
+    :return: a NFAutomaton with Epsillon transition
+    """
+    s1 = State("A", is_initial=True)
+    s2 = State("B")
+    s3 = State("C")
+    s4 = State("D", is_final=True)
+
+    symbols = ["0", "1", " "]
+    transitions = (
+        # ID   0     1    Epsillon
+        (s1, ([s2], [s2], [s4])),
+        (s2, ([s3], [s3], [s1])),
+        (s3, ([s4], [s4], [s2])),
+        (s4, ([s4], [s4], [s3])),
+    )
+
+    _set_transitions(transitions, symbols)
+
+    return Automaton(s1, [s1, s2, s3, s4])
+
+
 def _set_transitions(transitions: tuple, symbols: list):
     # transitions should be in the form (state, ((states_for_symbol1), (states_for_symbol2)))
     #  where len(tuple[1]) == len(symbols)
