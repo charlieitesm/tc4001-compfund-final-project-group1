@@ -1,4 +1,4 @@
-from automata_utils import states_are_compatible
+from automata_utils import states_are_compatible, is_dfa, nfa_2_dfa
 from state_machine import Automaton, State
 
 
@@ -10,6 +10,9 @@ def minimize_automaton(input_automaton: Automaton) -> Automaton:
     :param input_automaton: an Automaton to minimize
     :return: a new minimized Automaton
     """
+    if not is_dfa(input_automaton):
+        input_automaton = nfa_2_dfa(input_automaton)
+
     # Build a table with all the states, we'll use a map for that, here we'll keep track of inconsistent states
     state_map = _build_state_map(input_automaton)
 
