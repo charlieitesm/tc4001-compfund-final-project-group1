@@ -25,6 +25,41 @@ class State:
     def __str__(self):
         return "s{}".format(self.state_id)
 
+    def __eq__(self, other):
+        is_equal = self.state_id == other.state_id
+        is_equal = is_equal and self.is_initial == other.is_initial
+        is_equal = is_equal and self.is_final == other.is_final
+        return is_equal
+
+    def __lt__(self, other):
+        if self.is_initial and other.is_initial:
+            return self.state_id < other.state_id   # Tie breaker on the state ID
+
+        elif self.is_initial and not other.is_initial:
+            return True     # The initial state should stay at the beginning of the order
+
+        elif not self.is_initial and other.is_initial:
+            return False
+
+        else:
+            return self.state_id < other.state_id
+
+    def __gt__(self, other):
+        if self.is_final and other.is_final:
+            return self.state_id > other.state_id  # Tie breaker on the state ID
+
+        elif self.is_final and not other.is_final:
+            return True  # The final state should stay at the end of the order
+
+        elif not self.is_final and other.is_final:
+            return False
+
+        else:
+            return self.state_id > other.state_id
+
+    def __hash__(self):
+        return id(self)
+
 
 class Automaton:
     """
@@ -83,7 +118,9 @@ class Automaton:
 
         # We are good to continue building the Automaton
         self.initial_state = initial_state if initial_state is not None else initial_state_found[0]
-        self.states = states
+
+        # Let's keep an order where the initial state is at the beginning and the final states at the end
+        self.states = sorted(states)
         self.alphabet = tuple(sorted(alphabet))
 
         # The heads list will act more like a stack than a list. Python uses lists to simulate stacks too
