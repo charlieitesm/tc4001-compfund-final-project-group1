@@ -25,7 +25,7 @@ def state_machine_1() -> (Automaton, Automaton):
 
     _set_transitions(transitions, symbols)
 
-    big_automaton = Automaton(s1, [s1, s2, s3, s4, s5, s6, s7])
+    big_automaton = Automaton([s1, s2, s3, s4, s5, s6, s7])
 
     s1 = State("124", is_initial=True)
     s2 = State("357")
@@ -40,7 +40,7 @@ def state_machine_1() -> (Automaton, Automaton):
 
     _set_transitions(transitions, symbols)
 
-    min_automaton = Automaton(s1, [s1, s2, s3])
+    min_automaton = Automaton([s1, s2, s3])
 
     return big_automaton, min_automaton
 
@@ -69,7 +69,7 @@ def state_machine_2() -> (Automaton, Automaton):
 
     _set_transitions(transitions, symbols)
 
-    big_automaton = Automaton(s6, [s6, s7, s8, s9, s10, s11, s12])
+    big_automaton = Automaton([s6, s7, s8, s9, s10, s11, s12])
 
     s_a = State("A", is_initial=True, is_final=True)
     s_b = State("B", is_final=True)
@@ -88,7 +88,7 @@ def state_machine_2() -> (Automaton, Automaton):
 
     _set_transitions(transitions, symbols)
 
-    mini_automaton = Automaton(s_a, [s_a, s_b, s_c, s_d, s_e])
+    mini_automaton = Automaton([s_a, s_b, s_c, s_d, s_e])
 
     return big_automaton, mini_automaton
 
@@ -107,7 +107,7 @@ def state_machine_3() -> (Automaton, Automaton):
     )
     _set_transitions(transitions, symbols)
 
-    automaton = Automaton(s3, [s3, s4, s5])
+    automaton = Automaton([s3, s4, s5])
 
     # Since we don't have an equivalent "big automaton" we'll return the same automaton as both the mini and big
     return automaton, automaton
@@ -125,7 +125,7 @@ def state_machine_4() -> (Automaton, Automaton):
     )
     _set_transitions(transitions, symbols)
 
-    automaton = Automaton(s1, [s1, s2])
+    automaton = Automaton([s1, s2])
 
     # Since we don't have an equivalent "big automaton" we'll return the same automaton as both the mini and big
     return automaton, automaton
@@ -152,7 +152,7 @@ def state_machine_nfa_1() -> (Automaton, Automaton):
 
     _set_transitions(transitions, symbols)
 
-    nfa = Automaton(s1, [s1, s2, s3, s4])
+    nfa = Automaton([s1, s2, s3, s4])
 
     # Let's build the equivalent DFA to this NFA
     dfaS_A = State("A", is_initial=True)
@@ -178,7 +178,7 @@ def state_machine_nfa_1() -> (Automaton, Automaton):
 
     _set_transitions(transitions, symbols)
 
-    dfa = Automaton(dfaS_A, [dfaS_A, dfaS_AB, dfaS_ABC, dfaS_ABCD, dfaS_ACD, dfaS_ABD, dfaS_AC, dfaS_AD])
+    dfa = Automaton([dfaS_A, dfaS_AB, dfaS_ABC, dfaS_ABCD, dfaS_ACD, dfaS_ABD, dfaS_AC, dfaS_AD])
 
     return nfa, dfa
 
@@ -204,7 +204,7 @@ def state_machine_nfa_2() -> Automaton:
 
     _set_transitions(transitions, symbols)
 
-    return Automaton(s1, [s1, s2, s3, s4])
+    return Automaton([s1, s2, s3, s4])
 
 
 def state_machine_nfa_3() -> Automaton:
@@ -230,7 +230,7 @@ def state_machine_nfa_3() -> Automaton:
 
     _set_transitions(transitions, symbols)
 
-    return Automaton(s1, [s1, s2, s3, s4])
+    return Automaton([s1, s2, s3, s4])
 
 
 def _set_transitions(transitions: tuple, symbols: list):

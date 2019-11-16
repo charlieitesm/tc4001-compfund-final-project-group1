@@ -1,5 +1,6 @@
 import re
 from os import linesep
+
 from automata.state_machine import Automaton, State
 
 
@@ -56,7 +57,7 @@ def deserialize_automaton(input_file_path: str) -> Automaton:
     if initial_state is None and final_state is None:
         raise ValueError("The provided automata contains no initial or final state")
 
-    return Automaton(initial_state, states)
+    return Automaton(states)
 
 
 def is_init(state):

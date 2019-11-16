@@ -16,6 +16,7 @@ class State:
           to more than one state
     """
     def __init__(self, state_id: str = None, is_initial: bool = False, is_final: bool = False):
+
         self.state_id = state_id
         self.is_initial = is_initial
         self.is_final = is_final
@@ -48,21 +49,49 @@ class Automaton:
     of the automata is pointing to a State that is a final state.
 
     """
-    def __init__(self, initial_state: State, states: list):
+    def __init__(self, states: list, initial_state: State = None):
 
         # No state must be null
-        if not all([initial_state, *states]):
+        if not all(states):
             raise ValueError("The initial state or the states are None")
 
-        self.initial_state = initial_state
+        # Being validation of states
+        unique_state_ids = set()    # Each state must have a unique ID
+        initial_state_found = []    # We should have only one initial state per automaton
+        alphabet = set()            # The automaton should tell us all of the symbols in its alphabet
+        for state in states:
+            if not state.state_id:
+                raise ValueError("A State was given an empty ID but it is mandatory!")
+
+            state.state_id = state.state_id.upper()
+            unique_state_ids.add(state.state_id)
+
+            if state.is_initial:
+                initial_state_found.append(state)
+
+            # Add unique symbols to the alphabet
+            for symbol in state.transitions.keys():
+                alphabet.add(symbol)
+
+        if len(unique_state_ids) < len(states):
+            raise ValueError("More than one state has the same ID, they should be unique!")
+
+        num_initial_states_found = len(initial_state_found)
+        if num_initial_states_found != 1:
+            raise ValueError("{} states found, but the Automaton must have 1 and only 1 initial state"
+                             .format(num_initial_states_found))
+
+        # We are good to continue building the Automaton
+        self.initial_state = initial_state if initial_state is not None else initial_state_found[0]
         self.states = states
+        self.alphabet = tuple(sorted(alphabet))
 
         # The heads list will act more like a stack than a list. Python uses lists to simulate stacks too
-        self.heads = [initial_state]
+        self.heads = [self.initial_state]
 
         # A Helper list that will allow us to reset the heads back to the start, once initialized, it should not be
         #  modified
-        self._initial_heads = [initial_state]
+        self._initial_heads = [self.initial_state]
 
     def is_string_valid(self, input_string: str) -> bool:
         # Reset the heads first
