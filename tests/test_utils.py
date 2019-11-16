@@ -8,7 +8,7 @@ class MyTestCase(unittest.TestCase):
 
     # Test case when there are invalid uploads
     def test_error(self) -> None:
-        with self.assertRaisesRegex(ValueError, 'The provided automata contains no initial or final state'):
+        with self.assertRaises(ValueError):
             self.test_automaton = self.load_automaton("../resources/state_machine02.txt")
 
     # test calse to validate everything is ok
