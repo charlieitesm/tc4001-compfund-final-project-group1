@@ -1,7 +1,6 @@
 
-from automata.state_machine import Automaton
-from automata.state_machine import State
 from collections import deque
+
 from automata.state_machine import Automaton, State
 
 
@@ -10,48 +9,134 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
            Function to convert from a non deterministic finite automaton to a deterministic one
      """
     states_list = []
-    initial = State()
+    initial = None
     existing_state = {}
     alphabet = get_alphabet(input)
+
     if ' ' in alphabet:
         input = clean_epsilon_transition(input)
         alphabet.remove(' ')
-    states_queue = [input.initial_state]
-    limbo_state = State(state_id='limbo')
-    for symbol in alphabet:
-        limbo_state.transitions[symbol] = [limbo_state]
 
-    while len(states_queue) > 0:
-        current_state = states_queue.pop(0)
-        existing_state[current_state.state_id] = True
+    nfa_transitions = {}
+    for nfa_state in input.states:
         for symbol in alphabet:
-            to_state = State(state_id='')
-            for id in current_state.state_id.split('-'):
-                for node in input.states:
-                    if id == node.state_id:
-                        element = node
-                        break
-                if element.transitions.get(symbol, None) is None:
-                    to_state.transitions[symbol].append(limbo_state)
-                    if not existing_state.get(limbo_state.state_id, False):
-                        existing_state[limbo_state.state_id] = True
-                        states_list.append(limbo_state)
-                else:
-                    for transition in element.transitions[symbol]:
-                        if transition.state_id not in to_state.state_id.split('-'):
-                            to_state.state_id = to_state.state_id + '-' + transition.state_id
-                            to_state.is_final = to_state.is_final or transition.is_final
-            to_state.state_id = to_state.state_id[1:]
 
-            current_state.transitions[symbol] = [to_state]
-            if not existing_state.get(to_state.state_id, False):
-                states_queue.append(to_state)
+            if nfa_state.state_id not in nfa_transitions:
+                nfa_transitions[nfa_state.state_id] = {}
 
-        states_list.append(current_state)
-        if current_state.is_initial:
-            initial = current_state
+            nfa_transitions[nfa_state.state_id][symbol] = nfa_state.transitions.get(symbol)
+
+    # With the AFN transitions mapped in a table, let's create the new states
+
+    # We'll use this queue later for deriving the new DFA transition table from new states
+    new_state_deriving_queue = deque()
+
+    # The first new state is the initial and it shares the ID with the original NFA
+    nfa_initial = input.initial_state
+    dfa_initial = State(nfa_initial.state_id, is_initial=nfa_initial.is_initial, is_final=nfa_initial.is_final)
+
+    states_already_created = {
+        dfa_initial.state_id: dfa_initial
+    }
+
+    dfa_transitions = {
+        dfa_initial: {}
+    }
+
+    # Build the DFA transitions for the initial first from which we will derive the rest of the new states
+    initial_transitions = nfa_transitions[nfa_initial.state_id]
+
+    for symbol, state_combination in initial_transitions.items():
+        # Get the state IDs first and sort them alphabetically so that we never repeat the same combination of IDs
+        old_state_ids = sorted([state.state_id for state in state_combination])
+        new_id = "".join(old_state_ids)
+        new_state = states_already_created.get(new_id, None)
+
+        if new_state is None:
+            # If at least one final state is in this combination, the new state will inherit this property
+            is_final = any([old_state.is_final for old_state in state_combination])
+            new_state = State(new_id, is_final=is_final)
+
+            # Save this new state in the cache for later reuse if needed
+            states_already_created[new_id] = new_state
+            # Add it to the state deriving queue
+            new_state_deriving_queue.append(new_state)
+
+        dfa_transitions[dfa_initial][symbol] = new_state
+
+    # Get the IDs of the final states
+    final_states_ids = [state.state_id for state in input.states if state.is_final]
+
+    # Start deriving the rest of the states from the dfa_transitions we already have
+    dfa_transitions, states_already_created = _derive_new_dfa_states_from_intial(dfa_transitions,
+                                                         nfa_transitions,
+                                                         states_already_created,
+                                                         alphabet,
+                                                         final_states_ids,
+                                                         new_state_deriving_queue)
+
+    # With the transition map for the DFA and the cache of states created, we can link the states correctly
+    for state, transition_map in dfa_transitions.items():
+        states_list.append(state)
+
+        if state.is_initial:
+            initial = state
+
+        for symbol, destination_state in transition_map.items():
+            state.transitions[symbol] = [destination_state]  # The transitions are encoded in lists
 
     return Automaton(initial_state=initial, states=states_list)
+
+
+def _derive_new_dfa_states_from_intial(dfa_transitions: dict,
+                                       nfa_transitions: dict,
+                                       states_already_created: dict,
+                                       alphabet: list,
+                                       final_state_ids: list,
+                                       new_state_deriving_queue: deque) -> (dict, dict):
+
+    while new_state_deriving_queue:
+        new_state_entry = new_state_deriving_queue.popleft()
+
+        if new_state_entry not in dfa_transitions:
+            new_state_transitions = {}
+
+            for symbol in alphabet:
+                # Break the ID of the new state entry into individual chars to look them up in the original
+                # nfa_transitions ABC -> A,B,C
+                potential_new_id_digits = []  # A set of unique characters that will help us create the new state ID
+
+                for char_in_id in [c for c in new_state_entry.state_id]:
+                    # Get the ID for this symbol in the old NFA transition map
+                    old_nfa_transitions = nfa_transitions[char_in_id][symbol]
+
+                    if not old_nfa_transitions: # If this state doesn't have a transition, skip its lookup
+                        continue
+                    potential_new_id_digits.extend([state.state_id for state in old_nfa_transitions])
+
+                # We order the portions in alphabetical order (to avoid duplicates) of the new ID and remove
+                # any repeated ID and transform it to a single string
+                potential_new_id_digits = sorted(list(set(potential_new_id_digits)))
+                potential_new_id = "".join(potential_new_id_digits)
+
+                # Have we already created a state for this ID?
+                state_to_transition_to = states_already_created.get(potential_new_id, None)
+
+                if state_to_transition_to is None:
+                    # We haven't seen this one yet, let's create it, add it to the deriving queue
+                    is_final = any([True for st_id in potential_new_id_digits if st_id in final_state_ids])
+                    state_to_transition_to = State(potential_new_id, is_final=is_final)
+                    new_state_deriving_queue.append(state_to_transition_to)
+
+                    # Add it to the cache for potential reuse
+                    states_already_created[potential_new_id] = state_to_transition_to
+
+                # Map it in the new transitions map to be added to dfa_transitions for the state
+                new_state_transitions[symbol] = state_to_transition_to
+
+            dfa_transitions[new_state_entry] = new_state_transitions
+
+    return dfa_transitions, states_already_created
 
 
 def clean_epsilon_transition(input: Automaton) -> Automaton:
