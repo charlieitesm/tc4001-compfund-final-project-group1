@@ -233,6 +233,36 @@ def state_machine_nfa_3() -> Automaton:
     return Automaton(s1, [s1, s2, s3, s4])
 
 
+def state_machine_nfa_4() -> Automaton:
+    """
+    Creates a 6-state NFA with no epsillon transitions that possess a known DFA and a minimized DFA
+
+    We saw this one during class on the AFN - DFA lecture
+    :return: a NFAutomaton with no Epsillon transitions
+    """
+    s_a = State("A", is_initial=True)
+    s_b = State("B")
+    s_c = State("C")
+    s_d = State("D")
+    s_e = State("E")
+    s_f = State("F", is_final=True)
+
+    symbols = ["0", "1"]
+    transitions = (
+        # ID   0            1
+        (s_a, ([s_a, s_b],  [s_a, s_d])),
+        (s_b, ([s_c],       [])),
+        (s_c, ([s_f],       [])),
+        (s_d, ([],          [s_e])),
+        (s_e, ([],          [s_f])),
+        (s_f, ([s_f],       [s_f])),
+    )
+
+    _set_transitions(transitions, symbols)
+
+    return Automaton(s_a, [s_a, s_b, s_c, s_d, s_e, s_f])
+
+
 def _set_transitions(transitions: tuple, symbols: list):
     # transitions should be in the form (state, ((states_for_symbol1), (states_for_symbol2)))
     #  where len(tuple[1]) == len(symbols)
