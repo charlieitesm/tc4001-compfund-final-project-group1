@@ -1,5 +1,5 @@
-from automata_utils import states_are_compatible, is_dfa, nfa_2_dfa
-from state_machine import Automaton, State
+from automata.state_machine import Automaton, State
+from utils.automata_utils import states_are_compatible, is_dfa, nfa_2_dfa
 
 
 def minimize_automaton(input_automaton: Automaton) -> Automaton:
