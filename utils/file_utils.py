@@ -66,40 +66,33 @@ def remove_char(tag):
 
 
 def serialize_automaton(input_automaton: Automaton) -> str:
-    output_str = "# Automaton"
-    states = input_automaton.states
+    output_str_elements = []
 
-    for st in states:
+    for st in input_automaton.states:
         state_id = st.state_id
-        is_state_initial = st.is_initial
-        is_state_final = st.is_final
-        already_processed = None
-        for val in st.transitions.keys():
-            trans_name = val
-            vals = st.transitions[trans_name]
-            for v in vals:
-                if is_state_initial and is_state_final:
-                    if not already_processed:
-                        output_str += _calculate_str(">*", state_id + "|" + trans_name + "|" + v.state_id)
-                        already_processed = True
-                    else:
-                        output_str += _calculate_str("", state_id + "|" + trans_name + "|" + v.state_id)
-                if is_state_initial and not is_state_final:
-                    output_str += _calculate_str(">", state_id + "|" + trans_name + "|" + v.state_id)
-                if not st.is_initial and not st.is_final:
-                    output_str += _calculate_str("", state_id  + "|" + trans_name + "|" + v.state_id)
-                if is_state_final and not is_state_initial:
-                    if not already_processed:
-                        output_str += _calculate_str("*", state_id  + "|" + trans_name + "|" + v.state_id)
-                        already_processed = True
-                    else:
-                        output_str += _calculate_str("", state_id + "|" + trans_name + "|" + v.state_id)
 
-    return output_str
+        for symbol, states_to_transition_to in st.transitions.items():
 
+            for destination_state in states_to_transition_to:
+                line = [linesep]
 
-def _calculate_str(symbol, state):
-    return linesep + symbol + state
+                if st.is_initial:
+                    line.append(">")
+
+                if st.is_final:
+                    line.append("*")
+                line.extend([state_id, "|", symbol, "|"])
+
+                if destination_state.is_initial:
+                    line.append(">")
+
+                if destination_state.is_final:
+                    line.append("*")
+
+                line.append(destination_state.state_id)
+                output_str_elements.extend(line)
+
+    return "".join(output_str_elements)
 
 
 def save_str_to_file(output_file_path: str, contents: str):
