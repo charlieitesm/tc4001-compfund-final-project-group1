@@ -38,7 +38,7 @@ class AutomatonTest(unittest.TestCase):
 
         states = [s0, s1, s2, s3]
 
-        return Automaton(s0, states)
+        return Automaton(states)
 
 
 if __name__ == '__main__':

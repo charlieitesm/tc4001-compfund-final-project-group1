@@ -1,7 +1,5 @@
-
-from automata.state_machine import Automaton
-from automata.state_machine import State
 from collections import deque
+
 from automata.state_machine import Automaton, State
 
 
@@ -10,7 +8,6 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
            Function to convert from a non deterministic finite automaton to a deterministic one
      """
     states_list = []
-    initial = State()
     existing_state = {}
     alphabet = get_alphabet(input)
     input = clean_epsilon_transition(input)
@@ -48,7 +45,7 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
         if current_state.is_initial:
             initial = current_state
 
-    return Automaton(initial_state=initial, states=states_list)
+    return Automaton(states=states_list)
 
 
 def clean_epsilon_transition(input: Automaton) -> Automaton:

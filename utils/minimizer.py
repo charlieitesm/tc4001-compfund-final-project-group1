@@ -25,7 +25,7 @@ def minimize_automaton(input_automaton: Automaton) -> Automaton:
     new_initial_state = [state for state in merged_states if state.is_initial][0]
 
     # With the crossed-out redundant states out, we can build our automaton
-    return Automaton(new_initial_state, merged_states)
+    return Automaton(merged_states)
 
 
 def _build_state_map(input_automaton: Automaton):

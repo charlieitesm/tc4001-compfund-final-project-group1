@@ -21,18 +21,13 @@ class MyTestCase(unittest.TestCase):
         self.test_automaton = self.load_automaton("../resources/state_machine01.txt")
         for state in self.test_automaton.states:
             if state.is_final and state.is_initial:
-                self.assertEqual("q0", state.state_id)
+                self.assertEqual("Q0", state.state_id)
             if state.is_initial and not state.is_final:
-                self.assertEqual("q0", state.state_id)
+                self.assertEqual("Q0", state.state_id)
             if state.is_final and not state.is_initial:
-                self.assertEqual("q2", state.state_id)
+                self.assertEqual("Q2", state.state_id)
             if not state.is_final and not state.is_initial:
-                self.assertEqual("q1", state.state_id)
-
-    # test to check final
-    def test_final_only(self) -> None:
-        self.test_automaton = self.load_automaton("../resources/state_machine01.txt")
-
+                self.assertEqual("Q1", state.state_id)
 
     # test to check both initial and final
     def test_final_only(self) -> None:
@@ -44,8 +39,6 @@ class MyTestCase(unittest.TestCase):
 
     def test_write_file2(self) -> None:
         self.test_automaton = save_str_to_file('automata2.txt',serialize_automaton(self.load_automaton("../resources/state_machine01.txt")))
-
-
 
     @staticmethod
     def load_automaton(file) -> Automaton:
