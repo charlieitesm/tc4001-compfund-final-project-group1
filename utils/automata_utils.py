@@ -44,11 +44,24 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
             if not existing_state.get(to_state.state_id, False):
                 states_queue.append(to_state)
 
-        states_list.append(current_state)
+            states_list = add_state(states_list, current_state)
+
         if current_state.is_initial:
             initial = current_state
 
     return Automaton(states=states_list)
+
+
+def add_state(states_list, current_state):
+    """
+               Function to add state to automaton if it is not already added
+    """
+    for state in states_list:
+        if state.state_id == current_state.state_id:
+            return states_list
+
+    states_list.append(current_state)
+    return states_list
 
 
 def clean_epsilon_transition(input: Automaton) -> Automaton:
@@ -122,6 +135,7 @@ def print_automaton(input: Automaton):
             for each in go_to:
                 print(each.state_id, end=' ')
             print('')
+        print('')
 
 
 def is_dfa(input: Automaton) -> bool:
