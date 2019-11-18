@@ -22,6 +22,7 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
         current_state = states_queue.pop(0)
         existing_state[current_state.state_id] = True
         for symbol in alphabet:
+            needs_limbo = 0
             to_state = State(state_id='')
             for id in current_state.state_id.split('-'):
                 for node in input.states:
@@ -29,16 +30,21 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
                         element = node
                         break
                 if element.transitions.get(symbol, None) is None:
-                    to_state = limbo_state
-                    if not existing_state.get(limbo_state.state_id, False):
-                        existing_state[limbo_state.state_id] = True
-                        states_list = add_state(states_list, to_state)
+                    needs_limbo += 1
                 else:
                     for transition in element.transitions[symbol]:
                         if transition.state_id not in to_state.state_id.split('-'):
                             to_state.state_id = to_state.state_id + '-' + transition.state_id
                             to_state.is_final = to_state.is_final or transition.is_final
-                    to_state.state_id = to_state.state_id[1:]
+
+            if '-' in to_state.state_id:
+                to_state.state_id = to_state.state_id[1:]
+
+            if needs_limbo == len(current_state.state_id.split('-')):
+                to_state = limbo_state
+                if not existing_state.get(limbo_state.state_id, False):
+                    existing_state[limbo_state.state_id] = True
+                    states_list = add_state(states_list, to_state)
 
             current_state.transitions[symbol] = [to_state]
             if not existing_state.get(to_state.state_id, False):
