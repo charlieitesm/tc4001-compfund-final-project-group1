@@ -29,25 +29,22 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
                         element = node
                         break
                 if element.transitions.get(symbol, None) is None:
-                    to_state.transitions[symbol].append(limbo_state)
+                    to_state = limbo_state
                     if not existing_state.get(limbo_state.state_id, False):
                         existing_state[limbo_state.state_id] = True
-                        states_list.append(limbo_state)
+                        states_list = add_state(states_list, to_state)
                 else:
                     for transition in element.transitions[symbol]:
                         if transition.state_id not in to_state.state_id.split('-'):
                             to_state.state_id = to_state.state_id + '-' + transition.state_id
                             to_state.is_final = to_state.is_final or transition.is_final
-            to_state.state_id = to_state.state_id[1:]
+                    to_state.state_id = to_state.state_id[1:]
 
             current_state.transitions[symbol] = [to_state]
             if not existing_state.get(to_state.state_id, False):
                 states_queue.append(to_state)
 
             states_list = add_state(states_list, current_state)
-
-        if current_state.is_initial:
-            initial = current_state
 
     return Automaton(states=states_list)
 
