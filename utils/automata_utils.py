@@ -13,6 +13,7 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
     if ' ' in alphabet:
         input = clean_epsilon_transition(input)
         alphabet.remove(' ')
+
     states_queue = [input.initial_state]
     limbo_state = State(state_id='limbo')
     for symbol in alphabet:
@@ -20,34 +21,40 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
 
     while len(states_queue) > 0:
         current_state = states_queue.pop(0)
-        existing_state[current_state.state_id] = True
+        existing_state[current_state.state_id] = current_state
         for symbol in alphabet:
-            to_state = State(state_id='')
+            needs_limbo = 0
+            state_id = ''
+            is_final = False
             for id in current_state.state_id.split('-'):
                 for node in input.states:
                     if id == node.state_id:
                         element = node
                         break
+
                 if element.transitions.get(symbol, None) is None:
-                    to_state.transitions[symbol].append(limbo_state)
-                    if not existing_state.get(limbo_state.state_id, False):
-                        existing_state[limbo_state.state_id] = True
-                        states_list.append(limbo_state)
+                    needs_limbo += 1
                 else:
                     for transition in element.transitions[symbol]:
-                        if transition.state_id not in to_state.state_id.split('-'):
-                            to_state.state_id = to_state.state_id + '-' + transition.state_id
-                            to_state.is_final = to_state.is_final or transition.is_final
-            to_state.state_id = to_state.state_id[1:]
+                        if transition.state_id != 'limbo':
+                            if transition.state_id not in state_id.split('-'):
+                                state_id = state_id + '-' + transition.state_id
+                                is_final = is_final or transition.is_final
 
-            current_state.transitions[symbol] = [to_state]
-            if not existing_state.get(to_state.state_id, False):
-                states_queue.append(to_state)
+            if needs_limbo == len(current_state.state_id.split('-')):
+                current_state.transitions[symbol] = [limbo_state]
+                states_list = add_state(states_list, limbo_state)
+            else:
+                if '-' in state_id:
+                    state_id = state_id[1:]
 
-            states_list = add_state(states_list, current_state)
+                if existing_state.get(state_id, None) is None:
+                    existing_state[state_id] = State(state_id, is_final=is_final)
+                    states_queue.append(existing_state[state_id])
 
-        if current_state.is_initial:
-            initial = current_state
+                current_state.transitions[symbol] = [existing_state[state_id]]
+
+                states_list = add_state(states_list, current_state)
 
     return Automaton(states=states_list)
 
@@ -94,6 +101,8 @@ def clean_epsilon_transition(input: Automaton) -> Automaton:
 
     for state in input.states:
         for each in reachable_states[state]:
+            if each.is_final:
+                state.is_final = True
             for k, v in each.transitions.items():
                 if k in state.transitions.keys():
                     state.transitions[k].extend(v)
