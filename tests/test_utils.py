@@ -38,7 +38,7 @@ class MyTestCase(unittest.TestCase):
         self.test_automaton = save_str_to_file('automata.txt',serialize_automaton(self.load_automaton("../resources/state_machine01.txt")))
 
     def test_write_file2(self) -> None:
-        self.test_automaton = save_str_to_file('automata2.txt',serialize_automaton(self.load_automaton("../resources/state_machine01.txt")))
+        self.test_automaton = save_str_to_file('automat7.txt',serialize_automaton(self.load_automaton("../resources/state_machine_22.txt")))
 
     @staticmethod
     def load_automaton(file) -> Automaton:
