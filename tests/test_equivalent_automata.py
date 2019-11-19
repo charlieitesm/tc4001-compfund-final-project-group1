@@ -1,8 +1,8 @@
 import unittest
 
-from automata_examples import state_machine_1, state_machine_2, state_machine_3
-from automata_utils import automata_are_equivalent, states_are_compatible
-from state_machine import State
+from automata.state_machine import State
+from tests.automata_examples import state_machine_1, state_machine_2, state_machine_3
+from utils.automata_utils import automata_are_equivalent, states_are_compatible
 
 
 class EquivalentAutomataTest(unittest.TestCase):

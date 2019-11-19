@@ -9,16 +9,16 @@ class MyTestCase(unittest.TestCase):
     # Test case when there are invalid uploads
     def test_error(self) -> None:
         with self.assertRaises(ValueError):
-            self.test_automaton = self.load_automaton("../resources/state_machine02.txt")
+            self.test_automaton = self.load_automaton("./resources/state_machine02.txt")
 
     # test calse to validate everything is ok
     def test_good_file(self) -> None:
-        self.test_automaton = self.load_automaton("../resources/state_machine01.txt")
+        self.test_automaton = self.load_automaton("./resources/state_machine01.txt")
         self.assertTrue(self.test_automaton)
 
     # test to check initial
     def test_initial_only(self) -> None:
-        self.test_automaton = self.load_automaton("../resources/state_machine01.txt")
+        self.test_automaton = self.load_automaton("./resources/state_machine01.txt")
         for state in self.test_automaton.states:
             if state.is_final and state.is_initial:
                 self.assertEqual("Q0", state.state_id)
@@ -31,14 +31,14 @@ class MyTestCase(unittest.TestCase):
 
     # test to check both initial and final
     def test_final_only(self) -> None:
-        self.test_automaton = serialize_automaton(self.load_automaton("../resources/state_machine01.txt"))
+        self.test_automaton = serialize_automaton(self.load_automaton("./resources/state_machine01.txt"))
 
     # test to check both initial and final
     def test_write_file(self) -> None:
-        self.test_automaton = save_str_to_file('automata.txt',serialize_automaton(self.load_automaton("../resources/state_machine01.txt")))
+        self.test_automaton = save_str_to_file('automata.txt',serialize_automaton(self.load_automaton("./resources/state_machine01.txt")))
 
     def test_write_file2(self) -> None:
-        self.test_automaton = save_str_to_file('automat7.txt',serialize_automaton(self.load_automaton("../resources/state_machine_22.txt")))
+        self.test_automaton = save_str_to_file('automat7.txt',serialize_automaton(self.load_automaton("./resources/state_machine_22.txt")))
 
     @staticmethod
     def load_automaton(file) -> Automaton:

@@ -1,4 +1,4 @@
-from state_machine import Automaton, State
+from automata.state_machine import Automaton, State
 
 
 def state_machine_1() -> (Automaton, Automaton):
@@ -260,7 +260,7 @@ def state_machine_nfa_4() -> Automaton:
 
     _set_transitions(transitions, symbols)
 
-    return Automaton(s_a, [s_a, s_b, s_c, s_d, s_e, s_f])
+    return Automaton([s_a, s_b, s_c, s_d, s_e, s_f])
 
 
 def _set_transitions(transitions: tuple, symbols: list):
