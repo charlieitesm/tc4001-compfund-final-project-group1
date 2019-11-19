@@ -1,8 +1,8 @@
 import unittest
 
-from automata_examples import state_machine_1
-from automata_utils import automata_are_equivalent
-from minimizer import minimize_automaton
+from tests.automata_examples import state_machine_1
+from utils.automata_utils import automata_are_equivalent
+from utils.minimizer import minimize_automaton
 
 
 class MinimizedAutomataTest(unittest.TestCase):

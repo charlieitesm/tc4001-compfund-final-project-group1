@@ -1,6 +1,6 @@
 import unittest
 
-from state_machine import Automaton, State
+from automata.state_machine import Automaton, State
 
 
 class AutomatonTest(unittest.TestCase):

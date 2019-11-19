@@ -1,7 +1,7 @@
 import unittest
 
-from automata_examples import *
-from automata_utils import is_dfa
+from tests.automata_examples import *
+from utils.automata_utils import is_dfa
 
 
 class EquivalentAutomataTest(unittest.TestCase):

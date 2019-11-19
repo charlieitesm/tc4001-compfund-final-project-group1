@@ -1,6 +1,6 @@
 import unittest
 
-from state_machine import Automaton
+from automata.state_machine import Automaton
 from tests.automata_examples import state_machine_nfa_1, state_machine_nfa_2, state_machine_nfa_4
 from utils.automata_utils import nfa_2_dfa, is_dfa, automata_are_equivalent
 
@@ -18,7 +18,7 @@ class NFA2DFATest(unittest.TestCase):
 
         # Let's verify that there is nothing wonky with the states, there should be one state for a given state ID only
         unique_state_ids = set([state.state_id for state in result.states])
-        self.assertEquals(len(unique_state_ids), len(result.states), "The DFA has more than one state for a State ID!")
+        self.assertEqual(len(unique_state_ids), len(result.states), "The DFA has more than one state for a State ID!")
 
     def test_nfa_2_dfa_1(self):
         """
@@ -79,7 +79,7 @@ class NFA2DFATest(unittest.TestCase):
         # 1 Initial
         # 4 Normal
         # 4 Final
-        self.assertEquals(9, len(result.states))
+        self.assertEqual(9, len(result.states))
         initial_states = []
         normal_states = []
         final_states = []
@@ -92,9 +92,9 @@ class NFA2DFATest(unittest.TestCase):
             else:
                 normal_states.append(state)
 
-        self.assertEquals(1, len(initial_states))
-        self.assertEquals(4, len(normal_states))
-        self.assertEquals(4, len(final_states))
+        self.assertEqual(1, len(initial_states))
+        self.assertEqual(4, len(normal_states))
+        self.assertEqual(4, len(final_states))
 
 
 if __name__ == '__main__':
