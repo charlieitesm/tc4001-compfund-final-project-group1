@@ -47,6 +47,9 @@ def nfa_2_dfa(input: Automaton) -> Automaton:
             else:
                 if '-' in state_id:
                     state_id = state_id[1:]
+                    temp_list = state_id.split('-')
+                    temp_list.sort()
+                    state_id = '-'.join(temp_list)
 
                 if existing_state.get(state_id, None) is None:
                     existing_state[state_id] = State(state_id, is_final=is_final)
