@@ -1,0 +1,11 @@
+>S| |A
+>S| |E
+A|a|B
+A| |*D
+B|a|C
+C| |A
+E|a|F
+E|a|G
+F| |G
+G|a|*H
+*H| |E
