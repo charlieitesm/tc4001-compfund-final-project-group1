@@ -99,6 +99,3 @@ def save_str_to_file(output_file_path: str, contents: str):
     with open(output_file_path, mode="w", encoding="utf8") as fl:
         print(contents, file=fl)
 
-
-
-
