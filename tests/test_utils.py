@@ -1,7 +1,7 @@
 import unittest
 
 from automata.state_machine import Automaton
-from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file, serialize_graph_automaton
+from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file
 
 
 class MyTestCase(unittest.TestCase):

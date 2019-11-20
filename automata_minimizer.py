@@ -1,6 +1,6 @@
 import sys
 
-from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file, serialize_graph_automaton
+from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file
 from utils.minimizer import minimize_automaton
 
 VERSION = "0.0.1"

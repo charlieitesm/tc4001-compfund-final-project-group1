@@ -1,6 +1,5 @@
 import re
 from os import linesep
-from graphviz import Digraph
 
 from automata.state_machine import Automaton, State
 
