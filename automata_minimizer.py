@@ -30,7 +30,6 @@ def main():
     # Save the results to file for later inspection
     print("Saving results to {}...".format(OUTPUT_FILE))
     save_str_to_file(OUTPUT_FILE, mini_automaton_str)
-    serialize_graph_automaton(minimized_automaton)
 
     print("DONE!")
 
