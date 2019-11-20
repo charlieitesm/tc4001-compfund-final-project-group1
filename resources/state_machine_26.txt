@@ -1,0 +1,15 @@
+>q0|f|*q6
+>q0|c|q4
+>q0|c|q1
+>q0|f|q2
+q2|c|>q0
+q1|c|q1
+q1|d|q4
+q|f|q3
+q3|c|q3
+q3|f|q3
+q4|c|q4
+q4|d|q5
+q4|f|q5
+q5|c|q5
+q5|f|q5

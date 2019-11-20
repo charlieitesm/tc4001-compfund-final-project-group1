@@ -1,7 +1,7 @@
 import unittest
 
 from automata.state_machine import Automaton
-from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file
+from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file, serialize_graph_automaton
 
 
 class MyTestCase(unittest.TestCase):
@@ -35,10 +35,14 @@ class MyTestCase(unittest.TestCase):
 
     # test to check both initial and final
     def test_write_file(self) -> None:
-        self.test_automaton = save_str_to_file('automata.txt',serialize_automaton(self.load_automaton("./resources/state_machine01.txt")))
+        self.test_automaton = save_str_to_file('automata.txt',serialize_automaton(self.load_automaton("../resources/state_machine01.txt")))
 
     def test_write_file2(self) -> None:
         self.test_automaton = save_str_to_file('automat7.txt',serialize_automaton(self.load_automaton("./resources/state_machine_22.txt")))
+
+    def test_write_file3(self) -> None:
+        self.test_automaton = serialize_graph_automaton(deserialize_automaton(self.load_automaton("../resources/state_machine_22.txt")))
+
 
     @staticmethod
     def load_automaton(file) -> Automaton:
