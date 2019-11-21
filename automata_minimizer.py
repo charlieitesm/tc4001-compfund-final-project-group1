@@ -1,6 +1,6 @@
 import sys
 
-from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file
+from utils.file_utils import deserialize_automaton, serialize_automaton, save_str_to_file, serialize_graph_automaton
 from utils.minimizer import minimize_automaton
 
 VERSION = "0.0.1"
@@ -31,7 +31,11 @@ def main():
     print("Saving results to {}...".format(OUTPUT_FILE))
     save_str_to_file(OUTPUT_FILE, mini_automaton_str)
 
+    graph = args.get("graph")
+    if graph == 'y':
+        serialize_graph_automaton(minimized_automaton)
     print("DONE!")
+
 
 
 def _print_project_info():
@@ -59,12 +63,18 @@ def _parse_args() -> dict:
         raise ValueError("The input file path with the automata was not provided")
 
     input_path = sys.argv[1]
+    if len(sys.argv) == 2:
+        add_graph = 'n'
+    else:
+        add_graph = sys.argv[2]
 
     if not input_path:
         raise ValueError("The input file path is empty!")
 
+
     args = {
-        "input_file_path": input_path
+        "input_file_path": input_path,
+        "graph": add_graph
     }
 
     return args
