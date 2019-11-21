@@ -31,11 +31,9 @@ def main():
     print("Saving results to {}...".format(OUTPUT_FILE))
     save_str_to_file(OUTPUT_FILE, mini_automaton_str)
 
-    graph = args.get("graph")
-    if graph == 'y':
-        serialize_graph_automaton(minimized_automaton)
+    # The automaton will be drawn only if the graphviz library is installed in the system
+    serialize_graph_automaton(minimized_automaton)
     print("DONE!")
-
 
 
 def _print_project_info():
@@ -63,18 +61,12 @@ def _parse_args() -> dict:
         raise ValueError("The input file path with the automata was not provided")
 
     input_path = sys.argv[1]
-    if len(sys.argv) == 2:
-        add_graph = 'n'
-    else:
-        add_graph = sys.argv[2]
 
     if not input_path:
         raise ValueError("The input file path is empty!")
 
-
     args = {
-        "input_file_path": input_path,
-        "graph": add_graph
+        "input_file_path": input_path
     }
 
     return args
