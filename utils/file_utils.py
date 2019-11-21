@@ -1,6 +1,12 @@
 import re
 from os import linesep
 
+try:
+    from graphviz import Digraph
+    IS_GRAPHVIZ_AVAILABLE = True
+except ImportError:
+    IS_GRAPHVIZ_AVAILABLE = False
+
 from automata.state_machine import Automaton, State
 
 
@@ -93,6 +99,52 @@ def serialize_automaton(input_automaton: Automaton) -> str:
                 output_str_elements.extend(line)
 
     return "".join(output_str_elements)
+
+
+def serialize_graph_automaton(input_automaton: Automaton):
+    if not IS_GRAPHVIZ_AVAILABLE:
+        print("The graphviz library is not available, the automaton will not be drawn.")
+        print("To install the graphviz library run:")
+        print("pip3 install graphviz")
+        return
+
+    dot = Digraph(comment='FSM', filename='fsm.gv')
+    start = "s"
+    initial = None
+    dot.attr('node', shape='point')
+    dot.node(start)
+    for st in input_automaton.states:
+        state_id = st.state_id
+
+        for symbol, states_to_transition_to in st.transitions.items():
+
+            for destination_state in states_to_transition_to:
+                line = [linesep]
+
+                if st.is_initial:
+                    line.append(">")
+                    initial = state_id
+
+                if st.is_final:
+                    dot.attr('node', shape='doublecircle')
+                    dot.node(state_id)
+                else:
+                    dot.attr('node', shape='circle')
+                    dot.node(state_id)
+
+                if destination_state.is_initial:
+                    line.append(">")
+
+                if destination_state.is_final:
+                    dot.attr('node', shape='doublecircle')
+                    dot.node(state_id)
+                else:
+                    dot.attr('node', shape='circle')
+                    dot.node(state_id)
+
+                dot.edge(st.state_id, destination_state.state_id, symbol)
+    dot.edge(start, initial, '')
+    dot.view()
 
 
 def save_str_to_file(output_file_path: str, contents: str):
